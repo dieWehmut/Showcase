@@ -22,20 +22,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Checkout data branch
-        uses: actions/checkout@v4
-        with:
-          ref: data
-          path: data-branch
-          fetch-depth: 1
-
       - name: Sync project data from data branch
         run: |
-          if [ ! -f "data-branch/src/data/projects.ts" ]; then
-            echo "projects.ts not found in data branch."
-            exit 1
+          if git ls-remote --exit-code origin data >/dev/null 2>&1; then
+            echo "data branch detected. Syncing projects.ts"
+            git fetch origin data --depth=1
+            git show origin/data:src/data/projects.ts > src/data/projects.ts
+          else
+            echo "data branch not found. Skipping data sync."
           fi
-          cp data-branch/src/data/projects.ts src/data/projects.ts
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
