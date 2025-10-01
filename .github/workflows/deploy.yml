@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - data
   workflow_dispatch:
 
 jobs:
@@ -21,28 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout main branch snapshot
-        if: github.ref == 'refs/heads/data'
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: main-branch
-          fetch-depth: 0
-
-      - name: Sync projects.ts from data into main
-        if: github.ref == 'refs/heads/data'
-        run: |
-          cp src/data/projects.ts main-branch/src/data/projects.ts
-          cd main-branch
-          git add src/data/projects.ts
-          if git diff --cached --quiet; then
-            echo "No changes to sync into main."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "Sync projects data from data branch"
-            git push origin HEAD:main
-          fi
+      # data branch syncing removed per user request
 
       - uses: actions/setup-node@v3
         if: github.ref == 'refs/heads/main'

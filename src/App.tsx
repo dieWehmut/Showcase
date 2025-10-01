@@ -13,10 +13,13 @@ function App() {
   })
 
   useEffect(() => {
-    const launchedAt = Date.now()
+    const startAt = new Date('2025-10-01T23:00:00+08:00').getTime()
 
-    const interval = window.setInterval(() => {
-      const diff = Date.now() - launchedAt
+    const tick = () => {
+      const now = Date.now()
+      let diff = now - startAt
+      if (diff < 0) diff = 0 // future start -> show zero
+
       const totalSeconds = Math.floor(diff / 1000)
       const days = Math.floor(totalSeconds / 86400)
       const hours = Math.floor((totalSeconds % 86400) / 3600)
@@ -24,8 +27,10 @@ function App() {
       const seconds = totalSeconds % 60
 
       setUptime({ days, hours, minutes, seconds })
-    }, 1000)
+    }
 
+    tick()
+    const interval = window.setInterval(tick, 1000)
     return () => window.clearInterval(interval)
   }, [])
 
